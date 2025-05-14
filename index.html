@@ -218,7 +218,7 @@
                 <option value="auto">Auto (Eng to Asm) 🔮</option>
                 <option value="en">English 🏴󠁧󠁢󠁥󠁮󠁧󠁿</option>
                 <option value="as">Assamese (অসমীয়া) 🏵️</option>
-                <option value="brx">Bodo (बर') 🌸</option>
+                <option value="ta">Tamil (தமிழ்) 🏵️</option>
             </select>
             
             <button class="swap-btn" id="swapButton">
@@ -228,7 +228,7 @@
             <select id="targetLang">
                 <option value="en">English 🏴󠁧󠁢󠁥󠁮󠁧󠁿</option>
                 <option value="as">Assamese (অসমীয়া) 🏵️</option>
-                <option value="brx">Bodo (बर') 🌸</option>
+                <option value="ta">Tamil (தமிழ்) 🏵️</option>
             </select>
         </div>
 
@@ -263,7 +263,7 @@
                 return "";
             }
             
-            if (sourceLang === targetLang) {
+            if (sourceLang !== 'auto' && sourceLang === targetLang) {
                 return text;
             }
 
@@ -276,19 +276,22 @@
                     throw new Error(`API Error: ${response.status} ${response.statusText}`);
                 }
                 const data = await response.json();
+                let translatedText = "";
+
                 if (data.responseData && data.responseData.translatedText) {
                     const tempElem = document.createElement('textarea');
                     tempElem.innerHTML = data.responseData.translatedText;
-                    return tempElem.value;
+                    translatedText = tempElem.value;
                 } else if (data.matches && data.matches.length > 0 && data.matches[0].translation) {
                     const tempElem = document.createElement('textarea');
                     tempElem.innerHTML = data.matches[0].translation;
-                    return tempElem.value;
-                }
-                else {
+                    translatedText = tempElem.value;
+                } else {
                     console.warn("Translation not found or API response format changed:", data);
                     return text + " (The Scroll's vision is clouded... 🌫️)";
                 }
+                return translatedText;
+
             } catch (error) {
                 console.error("Translation API failed:", error);
                 return "The Scroll's magic fades... Try anon. 🔌";
@@ -338,12 +341,12 @@
         function debouncedTranslate() {
             clearTimeout(debounceTimeout);
             showLoading(); 
-            debounceTimeout = setTimeout(handleTranslation, 800); // slightly longer for "magic"
+            debounceTimeout = setTimeout(handleTranslation, 800);
         }
 
         function updateLanguageControlsState() {
             if (sourceLangSelect.value === 'auto') {
-                targetLangSelect.value = 'as';
+                targetLangSelect.value = 'as'; // Auto mode defaults to English -> Assamese
                 targetLangSelect.disabled = true;
             } else {
                 targetLangSelect.disabled = false;
@@ -358,9 +361,11 @@
             let newTargetForDropdown;
 
             if (currentSourceDropdownValue === 'auto') {
+                // 'auto' was Eng -> Asm. Swap makes it Asm -> Eng.
                 newSourceForDropdown = 'as';
                 newTargetForDropdown = 'en';
             } else {
+                // Standard swap
                 newSourceForDropdown = currentTargetDropdownValue;
                 newTargetForDropdown = currentSourceDropdownValue;
             }
@@ -398,7 +403,10 @@
         });
         
         copyTranslationButton.addEventListener('click', () => {
-            const textToCopy = translationResultDiv.querySelector('p')?.textContent;
+            const pElement = translationResultDiv.querySelector('p');
+            if (!pElement) return;
+            let textToCopy = pElement.textContent;
+            
             const nonContentIndicators = [
                 "The Scroll awaits your words... ✨", 
                 "Weaving the words on the Scroll... ⏳"
@@ -411,34 +419,39 @@
         });
 
         speakButton.addEventListener('click', () => {
-            const textToSpeak = translationResultDiv.querySelector('p')?.textContent;
+            const pElement = translationResultDiv.querySelector('p');
+            if (!pElement) return;
+            let textToSpeak = pElement.textContent;
+
              const nonContentIndicators = [
                 "The Scroll awaits your words... ✨", 
                 "Weaving the words on the Scroll... ⏳",
                 "The Scroll's magic fades... Try anon. 🔌",
                 "The Scroll's vision is clouded... 🌫️"
             ];
+
             if (!textToSpeak || nonContentIndicators.some(indicator => textToSpeak.includes(indicator))) {
                 alert("The Scroll is silent... or its current words are not for speaking. 🤫");
                 return;
             }
+
             try {
                 const speech = new SpeechSynthesisUtterance(textToSpeak);
-                let langForSpeech = targetLangSelect.value;
+                let langForSpeech = targetLangSelect.value; // Default to selected target
+                // If 'auto' mode was used, the actual target was Assamese.
                 if (sourceLangSelect.value === 'auto' && targetLangSelect.value === 'as' && targetLangSelect.disabled) {
                      langForSpeech = 'as';
                 }
 
                 const langVoiceMap = {
                     'en': 'en-US', 
-                    'as': 'as-IN', 
-                    'brx': 'brx-IN' 
+                    'as': 'as-IN',
+                    'ta': 'ta-IN' // Tamil (India)
                 };
 
                 if (langVoiceMap[langForSpeech]) {
                     speech.lang = langVoiceMap[langForSpeech];
                 }
-                // Add a little thematic flair to speech
                 speech.pitch = 0.9; 
                 speech.rate = 0.95;
                 speechSynthesis.speak(speech);
@@ -457,6 +470,7 @@
         
         targetLangSelect.addEventListener('change', handleTranslation);
 
+        // Initial setup
         updateLanguageControlsState();
         displayTranslation("");
 
