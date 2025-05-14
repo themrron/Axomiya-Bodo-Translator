@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <title>LingoWeaver Scroll 📜✨</title>
+    <style>
+        :root {
+            --primary-color: #5D3A9B; /* Deep Amethyst */
+            --secondary-color: #E0B0FF; /* Light Lavender/Mystic Glow */
+            --accent-color: #FFD700; /* Gold */
+            --text-dark: #3B302B; /* Dark Brown/Almost Black */
+            --text-light: #F0E6FF; /* Pale Lavender White */
+            --container-bg: rgba(25, 20, 35, 0.85); /* Dark translucent purple */
+            --border-color: var(--accent-color);
+            --textarea-bg: #E8E0D5; /* Aged Parchment */
+            --textarea-border: #8B4513; /* SaddleBrown - like old leather */
+        }
+
+        body {
+            font-family: 'Noto Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2A0F3B 0%, #1A0A24 100%); /* Dark Purple/Indigo Sky */
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--container-bg);
+            padding: 30px;
+            border-radius: 20px; /* Slightly less rounded for a 'tablet' feel */
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3), 0 5px 15px rgba(0,0,0,0.5); /* Gold glow + standard shadow */
+            border: 3px solid var(--border-color);
+        }
+
+        h1 {
+            text-align: center;
+            font-family: 'Cinzel Decorative', 'Times New Roman', serif;
+            color: var(--accent-color);
+            text-shadow: 1px 1px 2px var(--primary-color), 0 0 10px var(--secondary-color);
+            font-size: clamp(2.2em, 5vw, 3em);
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        select, button {
+            padding: 12px 20px;
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
+            background: var(--primary-color);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: transform 0.2s ease-out, box-shadow 0.2s, background-color 0.2s;
+            font-family: 'Noto Sans', sans-serif;
+            font-size: 0.95em;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        select:focus, button:focus {
+            outline: 3px solid var(--secondary-color);
+            outline-offset: 2px;
+            box-shadow: 0 0 10px var(--secondary-color);
+        }
+        
+        button:hover, select:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        button:active {
+            transform: translateY(0px);
+            background: #4A2F8B; /* Darker primary */
+        }
+
+        .swap-btn {
+            background: var(--accent-color);
+            color: var(--text-dark);
+            border-color: var(--primary-color);
+            font-size: 1.1em !important;
+        }
+        .swap-btn:hover {
+            background: var(--primary-color);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .copy-btn {
+            background: #708090; /* SlateGray */
+            color: var(--text-light);
+            font-size: 0.85em;
+            padding: 8px 14px;
+            border-color: #506070;
+        }
+        .copy-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+
+        .text-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 650px) {
+            .text-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .textarea-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+            padding: 15px;
+            border: 3px solid var(--textarea-border);
+            border-radius: 10px;
+            font-size: 17px;
+            font-family: 'Noto Sans', cursive;
+            resize: vertical;
+            box-sizing: border-box;
+            background-color: var(--textarea-bg);
+            color: var(--text-dark);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        textarea::placeholder {
+            color: #7A6A5D; /* Darker placeholder for parchment */
+            font-style: italic;
+        }
+        textarea:focus {
+            border-style: solid;
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px var(--accent-color);
+        }
+
+        .translation-box {
+            position: relative;
+            background: var(--textarea-bg);
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 180px;
+            border: 3px dashed var(--textarea-border);
+            font-size: 17px;
+            overflow-y: auto;
+            word-wrap: break-word;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .translation-box p {
+            margin: 0;
+            width: 100%;
+            text-align: left;
+        }
+
+        .speech-btn {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            font-size: 1.6em;
+            color: var(--primary-color);
+            padding: 5px;
+            text-shadow: 0 0 5px var(--secondary-color);
+        }
+        .speech-btn:hover {
+            color: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .loading-indicator {
+            font-style: italic;
+            color: var(--primary-color); /* Matches text color on parchment */
+            opacity: 0.9;
+            text-shadow: 1px 1px 1px var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LingoWeaver Scroll 📜✨</h1>
+        
+        <div class="controls">
+            <select id="sourceLang">
+                <option value="auto">Auto (Eng to Asm) 🔮</option>
+                <option value="en">English 🏴󠁧󠁢󠁥󠁮󠁧󠁿</option>
+                <option value="as">Assamese (অসমীয়া) 🏵️</option>
+                <option value="brx">Bodo (बर') 🌸</option>
+            </select>
+            
+            <button class="swap-btn" id="swapButton">
+                Reverse Glyphs ↔️
+            </button>
+
+            <select id="targetLang">
+                <option value="en">English 🏴󠁧󠁢󠁥󠁮󠁧󠁿</option>
+                <option value="as">Assamese (অসমীয়া) 🏵️</option>
+                <option value="brx">Bodo (बर') 🌸</option>
+            </select>
+        </div>
+
+        <div class="text-container">
+            <div class="textarea-wrapper">
+                <textarea id="sourceText" placeholder="Inscribe your message..."></textarea>
+                <button class="copy-btn" id="copySourceButton">Seal to Clipboard 📋</button>
+            </div>
+            
+            <div class="translation-box" id="translationResult">
+                <p class="loading-indicator">The Scroll awaits your words... ✨</p>
+                <button class="speech-btn" id="speakButton" title="Let the Scroll Recite">🗣️</button>
+                <button class="copy-btn" id="copyTranslationButton" style="position: absolute; top: 10px; right: 10px;" title="Seal Translation to Clipboard">📋 Seal Output</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sourceLangSelect = document.getElementById('sourceLang');
+        const targetLangSelect = document.getElementById('targetLang');
+        const sourceTextarea = document.getElementById('sourceText');
+        const translationResultDiv = document.getElementById('translationResult');
+        const swapButton = document.getElementById('swapButton');
+        const copySourceButton = document.getElementById('copySourceButton');
+        const copyTranslationButton = document.getElementById('copyTranslationButton');
+        const speakButton = document.getElementById('speakButton');
+
+        let debounceTimeout;
+
+        async function translateTextApi(text, sourceLang, targetLang) {
+            if (!text.trim()) {
+                return "";
+            }
+            
+            if (sourceLang === targetLang) {
+                return text;
+            }
+
+            const langPair = `${sourceLang}|${targetLang}`;
+            const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langPair}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                }
+                const data = await response.json();
+                if (data.responseData && data.responseData.translatedText) {
+                    const tempElem = document.createElement('textarea');
+                    tempElem.innerHTML = data.responseData.translatedText;
+                    return tempElem.value;
+                } else if (data.matches && data.matches.length > 0 && data.matches[0].translation) {
+                    const tempElem = document.createElement('textarea');
+                    tempElem.innerHTML = data.matches[0].translation;
+                    return tempElem.value;
+                }
+                else {
+                    console.warn("Translation not found or API response format changed:", data);
+                    return text + " (The Scroll's vision is clouded... 🌫️)";
+                }
+            } catch (error) {
+                console.error("Translation API failed:", error);
+                return "The Scroll's magic fades... Try anon. 🔌";
+            }
+        }
+
+        function displayTranslation(translatedText) {
+            translationResultDiv.innerHTML = ''; 
+            const textNode = document.createElement('p');
+            textNode.textContent = translatedText || "The Scroll awaits your words... ✨";
+            translationResultDiv.appendChild(textNode);
+            translationResultDiv.appendChild(speakButton); 
+            translationResultDiv.appendChild(copyTranslationButton); 
+        }
+        
+        function showLoading() {
+            translationResultDiv.innerHTML = ''; 
+            const loadingP = document.createElement('p');
+            loadingP.className = 'loading-indicator';
+            loadingP.textContent = "Weaving the words on the Scroll... ⏳";
+            translationResultDiv.appendChild(loadingP);
+            translationResultDiv.appendChild(speakButton); 
+            translationResultDiv.appendChild(copyTranslationButton); 
+        }
+
+        async function handleTranslation() {
+            const textToTranslate = sourceTextarea.value;
+            let effectiveSourceLang = sourceLangSelect.value;
+            let effectiveTargetLang = targetLangSelect.value;
+
+            if (sourceLangSelect.value === 'auto') {
+                effectiveSourceLang = 'en'; 
+                effectiveTargetLang = 'as'; 
+            }
+
+            if (!textToTranslate.trim()) {
+                displayTranslation("");
+                return;
+            }
+            
+            showLoading();
+
+            const translated = await translateTextApi(textToTranslate, effectiveSourceLang, effectiveTargetLang);
+            displayTranslation(translated);
+        }
+
+        function debouncedTranslate() {
+            clearTimeout(debounceTimeout);
+            showLoading(); 
+            debounceTimeout = setTimeout(handleTranslation, 800); // slightly longer for "magic"
+        }
+
+        function updateLanguageControlsState() {
+            if (sourceLangSelect.value === 'auto') {
+                targetLangSelect.value = 'as';
+                targetLangSelect.disabled = true;
+            } else {
+                targetLangSelect.disabled = false;
+            }
+        }
+
+        swapButton.addEventListener('click', () => {
+            const currentSourceDropdownValue = sourceLangSelect.value;
+            const currentTargetDropdownValue = targetLangSelect.value;
+            
+            let newSourceForDropdown;
+            let newTargetForDropdown;
+
+            if (currentSourceDropdownValue === 'auto') {
+                newSourceForDropdown = 'as';
+                newTargetForDropdown = 'en';
+            } else {
+                newSourceForDropdown = currentTargetDropdownValue;
+                newTargetForDropdown = currentSourceDropdownValue;
+            }
+
+            sourceLangSelect.value = newSourceForDropdown;
+            targetLangSelect.value = newTargetForDropdown;
+            
+            updateLanguageControlsState(); 
+
+            const sourceContent = sourceTextarea.value;
+            const translationP = translationResultDiv.querySelector('p');
+            const translationContent = translationP ? translationP.textContent : "";
+            
+            const nonContentIndicators = [
+                "The Scroll awaits your words... ✨", 
+                "Weaving the words on the Scroll... ⏳",
+                "The Scroll's magic fades... Try anon. 🔌",
+                "The Scroll's vision is clouded... 🌫️"
+            ];
+
+            if (sourceContent && translationContent && 
+                !nonContentIndicators.some(indicator => translationContent.includes(indicator))) {
+                sourceTextarea.value = translationContent;
+                handleTranslation();
+            } else {
+                 handleTranslation();
+            }
+        });
+
+        copySourceButton.addEventListener('click', () => {
+            if (!sourceTextarea.value) return;
+            navigator.clipboard.writeText(sourceTextarea.value)
+                .then(() => alert("✨ Inscription sealed to your clipboard! Master Scribe! 📜"))
+                .catch(err => console.error('Failed to copy source text: ', err));
+        });
+        
+        copyTranslationButton.addEventListener('click', () => {
+            const textToCopy = translationResultDiv.querySelector('p')?.textContent;
+            const nonContentIndicators = [
+                "The Scroll awaits your words... ✨", 
+                "Weaving the words on the Scroll... ⏳"
+            ];
+            if (!textToCopy || nonContentIndicators.some(indicator => textToCopy.includes(indicator))) return;
+            
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => alert("✨ The Scroll's wisdom is now yours to share! Copied! 📜"))
+                .catch(err => console.error('Failed to copy translated text: ', err));
+        });
+
+        speakButton.addEventListener('click', () => {
+            const textToSpeak = translationResultDiv.querySelector('p')?.textContent;
+             const nonContentIndicators = [
+                "The Scroll awaits your words... ✨", 
+                "Weaving the words on the Scroll... ⏳",
+                "The Scroll's magic fades... Try anon. 🔌",
+                "The Scroll's vision is clouded... 🌫️"
+            ];
+            if (!textToSpeak || nonContentIndicators.some(indicator => textToSpeak.includes(indicator))) {
+                alert("The Scroll is silent... or its current words are not for speaking. 🤫");
+                return;
+            }
+            try {
+                const speech = new SpeechSynthesisUtterance(textToSpeak);
+                let langForSpeech = targetLangSelect.value;
+                if (sourceLangSelect.value === 'auto' && targetLangSelect.value === 'as' && targetLangSelect.disabled) {
+                     langForSpeech = 'as';
+                }
+
+                const langVoiceMap = {
+                    'en': 'en-US', 
+                    'as': 'as-IN', 
+                    'brx': 'brx-IN' 
+                };
+
+                if (langVoiceMap[langForSpeech]) {
+                    speech.lang = langVoiceMap[langForSpeech];
+                }
+                // Add a little thematic flair to speech
+                speech.pitch = 0.9; 
+                speech.rate = 0.95;
+                speechSynthesis.speak(speech);
+            } catch (e) {
+                alert("Alas! The Scroll's voice cannot reach this realm (your browser). 🚫🗣️");
+                console.error("Speech synthesis failed:", e);
+            }
+        });
+        
+        sourceTextarea.addEventListener('input', debouncedTranslate);
+        
+        sourceLangSelect.addEventListener('change', () => {
+            updateLanguageControlsState();
+            handleTranslation();
+        });
+        
+        targetLangSelect.addEventListener('change', handleTranslation);
+
+        updateLanguageControlsState();
+        displayTranslation("");
+
+    </script>
+</body>
+</html>
